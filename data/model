@@ -1,0 +1,82 @@
+rm(list = ls())
+require("ggplot2")
+library("car")
+library(leaps)
+library(faraway)
+#require("glmnet")
+#require("DAAG")
+
+### read the data
+bodyfat = read.csv("BodyFat.csv", row.names = 1)
+str(bodyfat <- read.csv("BodyFat.csv", header=TRUE))
+bodyfat=bodyfat[,-1]
+bodyfat=cbind(bodyfat[,2],bodyfat[,1],bodyfat[,3:16])
+colnames(bodyfat)=c("DENSITY","BODYFAT","AGE","WEIGHT","HEIGHT","ADIPOSITY","NECK",
+                    "CHEST","ABDOMEN","HIP","THIGH","KNEE","ANKLE","BICEPS","FOREARM","WRIST")
+density_body=bodyfat$DENSITY
+
+
+### Clean up the data
+plot(bodyfat$DENSITY ~ 1/bodyfat$BODYFAT)
+summary(model <- lm(DENSITY ~ ., data=subset(bodyfat,select=-c(BODYFAT))))$coef
+plot(model, which=4)
+abline( h = 4/(252-15),lty=2 )
+bodyfat[39,]; bodyfat[42,]; bodyfat[96,]
+#39:He weights 363 pounds. Let’s say we remove him from the model.
+#42:His height is 29.5 inches. Remove.
+#96:
+summary(model <- lm(DENSITY ~ ., data=bodyfat[-42,-2]))
+layout(matrix(1:4, ncol=2))
+plot(model)
+bodyfat[c(39,221),] # High Leverage
+bodyfat[c(96,221,224),] # Possible outliers
+plot(model, which=4)
+abline( h = 4/(251-15), col='red', lty=2)
+
+
+### Diagonostics
+summary(model <- lm(DENSITY ~ ., data=bodyfat[-c(39,42),-2]))
+#For the other observations, it is not so clear why they’re influential, if they
+#are. I will also not look at outlier tests until we remove observation 39 as well.
+layout(matrix(1:4, ncol=2))
+plot(model)
+#The set c(96,221,224) still shows up as outliers. They also seem to be
+#outside of the bands (remember R ALWAYS indicates the 3 extreme points in those plots).
+
+### Outliers
+outlierTest(model)
+#So we suspect 96 as an outlier.
+#So far, we have finished data cleaning and could get variable selection started.
+
+### Mallow’s Cp
+X <- model.matrix(model)[,-1]
+Y <- bodyfat[-c(39,42),1]
+g <- leaps(X, Y)
+layout(matrix(1:1, ncol=2));Cpplot(g)
+g <- leaps(X,Y, nbest=1)
+Cpplot(g)
+cp.choice <- c(1,4,5,6,7,8,12,14)+2
+summary(model.cp <- lm(DENSITY ~ ., data=bodyfat[-c(39,42),c(1,cp.choice)]))
+
+### Adjusted R
+g <- leaps(X,Y, nbest=1, method="adjr2")
+plot(g$adjr2)
+(g$which)[which(g$adjr2 == max(g$adjr2)),]
+r2.choice <- c(3,4,6:11,13:16)
+summary(model.r2 <- lm(DENSITY ~ ., data=bodyfat[-c(39,42),c(1,r2.choice)]))
+
+### AIC.BIC
+AIC(model);AIC(model.cp)
+BIC(model);BIC(model.cp)
+model.AIC <- step(model, k=2)
+model.BIC <- step(model, k=log(250))
+AIC.choice <- c(3,6:10,14,16)
+BIC.choice <- c(6,8:10,16)
+#Notice how BIC selects a very parsimonious model.
+
+#AIC, BIC+ optimization method
+base <- lm(DENSITY~1,data=bodyfat)
+AIC.base <- step(base,direction="both",
+                 scope=list(lower=~1,upper=model),trace=T)
+BIC.base <- step(base,direction="both",
+                 scope=list(lower=~1,upper=model),trace=T,k=log(250))
