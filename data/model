@@ -15,6 +15,13 @@ colnames(bodyfat)=c("DENSITY","BODYFAT","AGE","WEIGHT","HEIGHT","ADIPOSITY","NEC
                     "CHEST","ABDOMEN","HIP","THIGH","KNEE","ANKLE","BICEPS","FOREARM","WRIST")
 density_body=bodyfat$DENSITY
 
+#bodyfat=495/density-450
+#bmi=weight/(height)^2*703
+weight39=48.9/703*72.25^2 #same as the record
+height42=sqrt(703*205/29.9) #different from the record
+bmi96=703*224.5/77.75^2 #same
+bodyfat182=495/1.1089-450 #negative value
+
 
 ### Clean up the data
 plot(bodyfat$DENSITY ~ 1/bodyfat$BODYFAT)
