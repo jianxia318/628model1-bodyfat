@@ -5,11 +5,11 @@ library(leaps)
 steps <- regsubsets(BODYFAT~., data = data, nvmax = 4,
                      method = "seqrep")
 summary(steps)
-coef(models,1:4)
+
 
 #create accuracy matric
 model=c()
-accuracy=c()
+R2=c()
 #one predictor
 step1<-lm(BODYFAT~ABDOMEN,data=data)
 summary(step1)
@@ -40,15 +40,10 @@ library(MASS)
 ridge2=lm.ridge(BODYFAT~ABDOMEN+WEIGHT,data=data,lambda = seq(0,10,0.1))
 select(ridge2)
 ridge2=lm.ridge(BODYFAT~ABDOMEN+WEIGHT,data=data,lambda = 0.2)
-summary(ridge2)
 pred.ridge2 <- coef(ridge2)[1] + coef(ridge2)[2]*data$ABDOMEN + coef(ridge2)[3]*data$WEIGHT
-# Sum of Squares Total and Error
+# calculate R squared
 y=data$BODYFAT
 y_predicted=pred.ridge2
-
-sst <- sum((y - mean(y))^2)
-sse <- sum((y_predicted - y)^2)
-# R squared
-rsq <- 1 - sse / sst
-rsq
-
+sst <- sum((y - mean(y))^2) #Sum of Squares Total
+sse <- sum((y_predicted - y)^2) #SSE
+rsq <- 1 - sse / sst # R squared
