@@ -33,3 +33,8 @@ bodyfat76=495/1.0666-450 #density wrong
 data$HEIGHT[42]==height42
 data$BODYFAT[48]==bodyfat48
 data=data[-182,]
+
+
+#change unit for weight,height to kg,cm
+data$WEIGHT=0.45*data$WEIGHT
+data$HEIGHT=2.54*data$HEIGHT
