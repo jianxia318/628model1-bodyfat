@@ -3,13 +3,13 @@ mydat<-read.csv("BodyFat.csv",row.names=1)
 dim(mydat)
 
 ### data cleaning ###
-mydat$HEIGHT=mydat$HEIGHT*2.54
-mydat$WEIGHT=round(mydat$WEIGHT*0.453592,2)
+mydat$HEIGHT=mydat$HEIGHT*2.54 #inch to cm
+mydat$WEIGHT=round(mydat$WEIGHT*0.453592,2) #lbs to kg
 summary(mydat)#bodyfat=0, weight=164.72,height=74.93,age=81
 mydat[mydat$AGE==81,]#a very thin old man
 mydat[mydat$WEIGHT==164.72,]#reasonable with adiposity
 mydat[mydat$HEIGHT==74.93,]
-mydat$HEIGHT[42]=round(sqrt(92.99/29.9)*100,2)
+mydat$HEIGHT[42]=round(sqrt(92.99/29.9)*100,2)#bmi=weight/(height/100)^2
 mydat=mydat[-182,]#can't be imputed by density,495/1.1089 - 450 less than zero
 
 plot(mydat$BODYFAT~I(mydat$DENSITY^(-1)),xlim=c(0.90,1.01),ylab="Bodyfat",xlab="1/Density",col="skyblue",pch=19,cex=0.7,main="Bodyfat vs 1/Density")
