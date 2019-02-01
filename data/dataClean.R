@@ -32,4 +32,4 @@ bodyfat76=495/1.0666-450 #density wrong
 #outlier process
 data$HEIGHT[42]==height42
 data$BODYFAT[48]==bodyfat48
-data[-182,]
+data=data[-182,]
