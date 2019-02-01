@@ -1,10 +1,5 @@
 rm(list = ls())
-require("ggplot2")
-library("car")
-library(leaps)
-library(faraway)
-#require("glmnet")
-#require("DAAG")
+
 data = read.csv("BodyFat.csv", row.names = 1)
 summary(data)
 #detect outlier 39,42,182 by 
@@ -38,37 +33,3 @@ bodyfat76=495/1.0666-450 #density wrong
 data$HEIGHT[42]==height42
 data$BODYFAT[48]==bodyfat48
 data[-182,]
-
-
-#========================================================================
-library(leaps)
-steps <- regsubsets(BODYFAT~., data = data, nvmax = 4,
-                     method = "seqrep")
-summary(steps)
-coef(models,1:4)
-
-#create accuracy matric
-model=c()
-accuracy=c()
-#one predictor
-step1<-lm(BODYFAT~ABDOMEN,data=data)
-model <- c(model, "step1")
-
-
-#two predictor
-step2<-lm(BODYFAT~ABDOMEN+WEIGHT,data=data)
-model <- c(model, "step2")
-
-#three predictor
-step3<-lm(BODYFAT~ABDOMEN+WEIGHT+WRIST,data=data)
-model <- c(model, "step3")
-
-#four predictor
-step4<-lm(BODYFAT~ABDOMEN+AGE+HEIGHT+WRIST,data=data)
-model <- c(model, "step4")
-
-#test colinearity
-library(car)
-vif(step4)
-
-
