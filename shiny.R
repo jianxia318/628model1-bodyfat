@@ -4,7 +4,10 @@ ui <- fluidPage(
   sidebarPanel(
     numericInput('ABDOMEN', 'ABDOMEN', 92,min = 0),
     numericInput('WEIGHT', 'WEIGHT', 80,min = 0),
-    numericInput('WRIST', 'WRIST', 18,min = 0),
+    numericInput('WRIST', 'WRIST', 18,min = 0)
+  ),
+  mainPanel(
+    h3("Body Fat Percentage"),
     verbatimTextOutput("value1")
   )
 )
