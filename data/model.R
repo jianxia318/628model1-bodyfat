@@ -47,3 +47,8 @@ y_predicted=pred.ridge2
 sst <- sum((y - mean(y))^2) #Sum of Squares Total
 sse <- sum((y_predicted - y)^2) #SSE
 rsq <- 1 - sse / sst # R squared
+
+
+#final model
+fit=lm(BODYFAT~ABDOMEN+WEIGHT:WRIST,data=data)
+coefficients(fit)
