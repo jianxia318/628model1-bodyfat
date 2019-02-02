@@ -2,12 +2,12 @@ library(shiny)
 ui <- fluidPage(
   titlePanel("Body Fat Calculator"),
   sidebarPanel(
-    numericInput('ABDOMEN', 'ABDOMEN', 92,min = 0),
-    numericInput('WEIGHT', 'WEIGHT', 80,min = 0),
-    numericInput('WRIST', 'WRIST', 18,min = 0)
+    numericInput('ABDOMEN', 'ABDOMEN(cm)', 92,min = 0),
+    numericInput('WEIGHT', 'WEIGHT(kg)', 80,min = 0),
+    numericInput('WRIST', 'WRIST(cm)', 18,min = 0)
   ),
   mainPanel(
-    h3("Body Fat Percentage"),
+    h5("Body Fat Percentage"),
     verbatimTextOutput("value1")
   )
 )
