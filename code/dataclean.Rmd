@@ -1,0 +1,73 @@
+---
+title: "datacleaning"
+author: "Yunbei Zheng"
+date: "2019年2月2日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm(list = ls())
+library(MASS)
+library(ggplot2);library('gridExtra')
+```
+
+```{r}
+dat = read.csv("BodyFat.csv", row.names = 1)
+summary(dat)
+
+par(mfrow=c(1,3))
+boxplot(dat$BODYFAT,main="BODYFAT")
+boxplot(dat$WEIGHT,main="WEIGHT")
+boxplot(dat$HEIGHT,main="HEIGHT")
+
+which(dat$WEIGHT==max(dat$WEIGHT))#39
+which(dat$HEIGHT==min(dat$HEIGHT))#42
+which(dat$BODYFAT==0)#182
+#bmi=weight/(height)^2*703
+
+###By looking at the dataset summary and boxplots, we detect three outliers: #39 weights extremely heavy, #42 is too short, #182 has zero bodyfat. Then we tried to use the variable values that seem to be true to predict the corresponding outlier variable for these three persons.
+dat[39,]; dat[42,]; dat[182,]
+
+weight39=48.9/703*72.25^2 #same as the record, keep 39
+height42=sqrt(703*205/29.9) #different from the record, replace it by the new height
+dat182=495/1.1089-450 #negative value, delete 182
+
+bodyfat$HEIGHT[42]=height42
+bodyfat$BODYFAT[48]=bodyfat48
+bodyfat=bodyfat[-182,]
+
+###We delete #182 variable, change the height of #42 and keep the weight of #39.
+```
+
+
+```{r}
+#detect 48,76,96
+par(mfrow=c(1,1))
+plot(y=dat$BODYFAT, x = 1/dat$DENSITY, ylab="bodyfat percentage", xlab="body density", 
+     main="BODYFAT vs. 1/DENSITY")
+text(0.91,20,"96",col = "blue")
+text(0.94,9,"48",col = "blue")
+text(0.94,20.5,"76",col = "blue")
+
+###Notice there are three data points whose bodyfat is in conflict with density use the siri's formula. We search for a bodyfat calculator from https://www.active.com/fitness/calculators/bodyfat as reference to re-calculate these three bodyfat usig Weight and Waist Circumference(Abdomen) two variables.
+dat[48,]; dat[96,]; dat[76,]
+
+bodyfat48=495/1.0665-450 #bodyfay wrong
+bodyfat96=495/1.0991-450 #density wrong
+bodyfat76=495/1.0666-450 #density wrong
+
+###Then we assume the density is truly recorded, so we use density value to recalculate bodyfat value for #96 and #76.
+
+```
+
+```{r}
+dat=dat[,-2]
+dat$WEIGHT=round(dat$WEIGHT*0.45359237,2)
+dat$HEIGHT=round(dat$HEIGHT*2.54,2)
+###Since the unit of most of the variables is centimeter, to unify units, we change the unit of height to be centimeter. And to make it easier to calculate bmi(ABDOMEN), also change the unit of weight to be kilogram.
+
+```
